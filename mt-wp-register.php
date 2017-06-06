@@ -4,12 +4,12 @@
  *
  * @author Michiel Tramper - https://michieltramper.com & https://www.makeitworkpress.com
  */
-namespace Classes\WP_Register;
+namespace WP_Register;
 use WP_Error as WP_Error;
 
 defined( 'ABSPATH' ) or die( 'Go eat veggies!' );
 
-class MT_WP_Register {
+class Register {
     
     /**
      * Holds the array with types to register
