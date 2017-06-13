@@ -181,6 +181,24 @@ class Register {
     }
     
     /**
+     * Registers custom image sizes
+     * If themes hook early on after_setup_theme, this function can still be executed
+     */
+    private function imageSizes() {
+        
+        $object = $this;
+        
+        add_action( 'after_setup_theme', function() use($object) {
+            
+            foreach( $object->register['imageSizes'] as $imageSize ) {
+                add_image_size( $imageSize['name'], $imageSize['width'], $imageSize['height'], $imageSize['crop'] );
+            }
+            
+        }, 20 );
+        
+    }
+    
+    /**
      * Registers custom widgets
      */
     private function widgets() {
@@ -210,7 +228,7 @@ class Register {
         
         add_action( 'after_setup_theme', function() use($object) {
             register_nav_menus( $object->register['menus'] );
-        } );
+        }, 20 );
         
     }
     
