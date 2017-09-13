@@ -49,4 +49,4 @@ You can add the types you want to register through an multidimensional array. Pl
 ### Create instance
 Create a new instance of the WP_Register class with your registration array and textdomain string as arguments.
 
-    $optimize = new Classes\WP_Register\MT_WP_Register($registrations, 'textdomain');
+    $register = new WP_Register\Register($registrations, 'textdomain');
