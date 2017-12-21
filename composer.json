@@ -1,3 +1,22 @@
 {
-    "name": "wp-register"
+    "name": "makeitworkpress/wp-register",
+    "description": "This class formats common WordPress registration actions in a wrapper, so you can easily register posts, taxonomies, menus, sidebards and widgets.",
+    "license": "GPL",
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "MakeitWorkPress\\WP_Register\\": "src"
+        }
+    },
+    "homepage": "https://github.com/makeitworkpress/wp-register",
+    "authors": [ 
+        {
+            "name": "Michiel Tramper",
+            "email": "michiel@makeitworkpress.com",
+            "homepage": "https://www.makeitworkpress.com"
+
+        } 
+    ]           
 }

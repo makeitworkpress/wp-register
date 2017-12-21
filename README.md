@@ -49,4 +49,4 @@ You can add the types you want to register through an multidimensional array. Pl
 ### Create instance
 Create a new instance of the WP_Register class with your registration array and textdomain string as arguments.
 
-    $register = new WP_Register\Register($registrations, 'textdomain');
+    $register = new MakeitWorkPress\WP_Register\Register($registrations, 'textdomain');

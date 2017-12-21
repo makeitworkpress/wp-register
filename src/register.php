@@ -4,7 +4,7 @@
  *
  * @author Michiel Tramper - https://michieltramper.com & https://www.makeitworkpress.com
  */
-namespace WP_Register;
+namespace MakeitWorkPress\WP_Register;
 use WP_Error as WP_Error;
 
 defined( 'ABSPATH' ) or die( 'Go eat veggies!' );
