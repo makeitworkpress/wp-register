@@ -2,7 +2,7 @@
 /**
  * Class wrapper for registering post types, taxonomies, sidebars, widget and menus.
  *
- * @author Michiel Tramper - https://michieltramper.com & https://www.makeitworkpress.com
+ * @author Michiel Tramper https://www.makeitworkpress.com
  */
 namespace MakeitWorkPress\WP_Register;
 use WP_Error as WP_Error;
