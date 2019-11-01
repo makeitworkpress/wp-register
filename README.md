@@ -1,7 +1,7 @@
 # wp-register
 Makes registering custom image sizes, menus, post types, taxonomies, sidebars and widgets easy. 
 
-WP Register is maintained by [Make it WorkPress](https://www.makeitworkpress.com/wordpress-solutions/scripts/wp-register/).
+WP Register is maintained by [Make it WorkPress](https://www.makeitwork.press/scripts/wp-register/).
 
 ## Usage
 Include the WP_Register class in your plugin, theme or child theme file. Require it in your file, use an autoloader or include it using composer. You can read more about autoloading in [the readme of wp-autoload](https://github.com/makeitworkpress/wp-autoload).
