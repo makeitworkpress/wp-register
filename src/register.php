@@ -31,7 +31,7 @@ class Register {
      * @param array     $register   The array with objects to be registered
      * @param string    $domain     The language domain for the current plugin or theme
      */
-    public function __construct(Array $register = array(), $textdomain = '') {
+    public function __construct(Array $register = [], $textdomain = '') {
         $this->register     = $register;
         $this->textdomain   = '';
         
@@ -61,8 +61,8 @@ class Register {
                     continue;
                 }
                 
-                $defaults = array(
-                    'labels' => array(
+                $defaults = [
+                    'labels' => [
                         'name'                  => sprintf( __('%s', $object->textdomain), $type['plural'] ),
                         'singular_name'         => sprintf( __('%s', $object->textdomain), $type['singular'] ),
                         'menu_name'             => sprintf( __('%s', $object->textdomain), $type['plural'] ),
@@ -76,19 +76,29 @@ class Register {
                         'not_found'             => sprintf( __('No %s found', $object->textdomain), $type['plural'] ),
                         'not_found_in_trash'    => sprintf( __('No %s found in Trash', $object->textdomain), $type['plural'] ),
                         'parent_item_colon'     => sprintf( __('Parent %s:', $object->textdomain), $type['singular'] ),                    
-                    ),
+                    ],
                     'public' => true,
-                );
+                ];
                 
                 // Fastforwards in setting the slug
                 if( isset($type['slug']) ) {
-                    $type['args']['rewrite'] = array('slug' => $type['slug']);
+                    $type['args']['rewrite'] = ['slug' => $type['slug']];
                 }                
                 
                 // Merge defaults and arguments
-                $type['args'] = wp_parse_args( isset($type['args']) ? $type['args'] : array(), $defaults );
+                $type['args'] = wp_parse_args( isset($type['args']) ? $type['args'] : [], $defaults );
                 
                 register_post_type($type['name'], $type['args']);
+
+                // Adds existing taxonomies to this post type
+                if( isset($type['taxonomies']) && is_array($type['taxonomies']) ) {
+                    foreach( $type['taxonomies'] as $taxonomy ) {
+                        if( ! taxonomy_exists($taxonomy) ) {
+                            continue;
+                        }
+                        register_taxonomy_for_object_type($taxonomy, $type['name']);
+                    }
+                }
                 
             }
             
@@ -112,8 +122,8 @@ class Register {
                     continue;
                 } 
                 
-                $defaults = array(
-                    'labels' => array(
+                $defaults = [
+                    'labels' => [
                         'name'                          => sprintf( __('%s', $object->textdomain), $taxonomy['plural'] ),
                         'singular_name'                 => sprintf( __('%s', $object->textdomain), $taxonomy['singular'] ),
                         'menu_name'                     => sprintf( __('%s', $object->textdomain), $taxonomy['plural'] ),
@@ -131,17 +141,17 @@ class Register {
                         'add_or_remove_items'           => sprintf( __('Add or remove %s', $object->textdomain), $taxonomy['plural'] ),
                         'choose_from_most_used'         => sprintf( __('Choose from most used %s', $object->textdomain), $taxonomy['plural'] ),
                         'not_found'                     => sprintf( __('No %s found', $object->textdomain), $taxonomy['plural'] )                   
-                    ),
+                    ],
                     'hierarchical' => true
-                );
+                ];
                 
                 // Set the slug
                 if( isset($taxonomy['slug']) ) {
-                    $taxonomy['args']['rewrite'] = array('slug' => $taxonomy['slug']);
+                    $taxonomy['args']['rewrite'] = ['slug' => $taxonomy['slug']];
                 } 
                     
                 // Merge defaults and arguments
-                $taxonomy['args'] = wp_parse_args( isset($taxonomy['args']) ? $taxonomy['args'] : array(), $defaults );                    
+                $taxonomy['args'] = wp_parse_args( isset($taxonomy['args']) ? $taxonomy['args'] : [], $defaults );                    
                 
                 register_taxonomy( $taxonomy['name'], $taxonomy['object'], $taxonomy['args'] );
                 
@@ -163,12 +173,12 @@ class Register {
             foreach( $object->register['sidebars'] as $sidebar ) {
 
                 // Default attributes for the sidebars
-                $defaults = array(
+                $defaults = [
                     'before_widget' => '<section id="%1$s" class="widget %2$s">',
                     'after_widget'  => '</section>',
                     'before_title'  => '<h3 class="widget-title">',
                     'after_title'   => '</h3>'
-                );
+                ];
 
                 $sidebar = wp_parse_args( $sidebar, $defaults );
 
