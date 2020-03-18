@@ -1,5 +1,5 @@
 # wp-register
-Makes registering custom image sizes, menus, post types, taxonomies, sidebars and widgets easy. 
+WordPress has many registration tasks. WP Register makes registering custom image sizes, menus, post types, taxonomies, sidebars and widgets easy. 
 
 WP Register is maintained by [Make it WorkPress](https://makeitwork.press/scripts/wp-register/).
 
@@ -30,6 +30,8 @@ $registrations = [
             'singular'      => __('Beer', 'textdomain'), 
             'args'          => ['public' => true]       // Contains the arguments as they are supported by register_post_type. (optional)
             'taxonomies'    => ['category']             // Connects existing taxonomies to this post type. Should be an array. (optional)
+            'slug'          => 'slug'                   // Sets a custom slug, fastforward for the rewrite slug setting in arguments
+            'icon'          => 'dashicon-beer'          // Sets a custom wp-admin menu icon, fastforward for the menu_icon setting in arguments
         ]
     ],
     'sidebars' => [
@@ -53,7 +55,7 @@ $registrations = [
        ]
     ],
     'widgets' => [
-        'WidgetClass' // The name of your custom widget class
+        'WidgetClass' // The name of your custom widget class, namespeced if using autoload
     ],
 ];
 ```

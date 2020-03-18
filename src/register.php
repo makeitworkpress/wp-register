@@ -80,10 +80,15 @@ class Register {
                     'public' => true,
                 ];
                 
-                // Fastforwards in setting the slug
-                if( isset($type['slug']) ) {
+                // Fastforwards icon setting
+                if( isset($type['icon']) && $type['icon'] ) {
+                    $type['args']['menu_icon'] = $type['icon'];
+                } 
+                
+                // Fastforwards slug setting
+                if( isset($type['slug']) && $type['slug'] ) {
                     $type['args']['rewrite'] = ['slug' => $type['slug']];
-                }                
+                }                  
                 
                 // Merge defaults and arguments
                 $type['args'] = wp_parse_args( isset($type['args']) ? $type['args'] : [], $defaults );
