@@ -87,7 +87,7 @@ class Register {
                 
                 // Fastforwards slug setting
                 if( isset($type['slug']) && $type['slug'] ) {
-                    $type['args']['rewrite'] = ['slug' => $type['slug']];
+                    $type['args']['rewrite']['slug'] = $type['slug'];
                 }                  
                 
                 // Merge defaults and arguments
