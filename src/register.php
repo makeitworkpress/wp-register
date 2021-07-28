@@ -14,7 +14,7 @@ class Register {
     /**
      * Holds the array with types to register
      *
-     * @access private
+     * @access public
      */
     public $register;
     
@@ -28,7 +28,7 @@ class Register {
     /**
      * Set the initial state of the class
      *
-     * @param array     $register   The array with objects to be registered
+     * @param array     $register   The array with objects to be registered, supports post_types, taxonomies, menus, sidebars, widgets, blocks and image_sizes
      * @param string    $domain     The language domain for the current plugin or theme
      */
     public function __construct(Array $register = [], $textdomain = '') {
@@ -45,63 +45,72 @@ class Register {
         }
 
     }
+
+    /**
+     * Register::postTypes is deprecated.
+     * This code maintains backwards compatibility.
+     */
+    private function postTypes() {
+        $this->post_types();
+    }
     
     /**
      * Registers the post types
      */
-    private function postTypes() {
+    private function post_types() {
         
-        $object = $this;
-        
-        add_action( 'init', function() use($object) {
+        add_action( 'init', function() {
+
+            // Backwards compatibility with the old setup
+            $this->register['post_types'] = isset($this->register['postTypes']) ? $this->register['postTypes'] : $this->register['post_types']; 
             
-            foreach( $object->register['postTypes'] as $type ) {
+            foreach( $this->register['post_types'] as $post_type ) {
                 
-                if( ! isset($type['name']) ) {
+                if( ! isset($post_type['name']) ) {
                     continue;
                 }
                 
                 $defaults = [
                     'labels' => [
-                        'name'                  => sprintf( __('%s', $object->textdomain), $type['plural'] ),
-                        'singular_name'         => sprintf( __('%s', $object->textdomain), $type['singular'] ),
-                        'menu_name'             => sprintf( __('%s', $object->textdomain), $type['plural'] ),
-                        'all_items'             => sprintf( __('%s', $object->textdomain), $type['plural'] ),
-                        'add_new'               => __('Add New', $object->textdomain),
-                        'add_new_item'          => sprintf( __('Add New %s', $object->textdomain), $type['singular'] ),
-                        'edit_item'             => sprintf( __('Edit %s', $object->textdomain), $type['singular'] ),
-                        'new_item'              => sprintf( __('New %s', $object->textdomain), $type['singular'] ),
-                        'view_item'             => sprintf( __('View %s', $object->textdomain), $type['singular'] ),
-                        'search_items'          => sprintf( __('Search %s', $object->textdomain), $type['plural'] ),
-                        'not_found'             => sprintf( __('No %s found', $object->textdomain), $type['plural'] ),
-                        'not_found_in_trash'    => sprintf( __('No %s found in Trash', $object->textdomain), $type['plural'] ),
-                        'parent_item_colon'     => sprintf( __('Parent %s:', $object->textdomain), $type['singular'] ),                    
+                        'name'                  => sprintf( __('%s', $this->textdomain), $post_type['plural'] ),
+                        'singular_name'         => sprintf( __('%s', $this->textdomain), $post_type['singular'] ),
+                        'menu_name'             => sprintf( __('%s', $this->textdomain), $post_type['plural'] ),
+                        'all_items'             => sprintf( __('%s', $this->textdomain), $post_type['plural'] ),
+                        'add_new'               => __('Add New', $this->textdomain),
+                        'add_new_item'          => sprintf( __('Add New %s', $this->textdomain), $post_type['singular'] ),
+                        'edit_item'             => sprintf( __('Edit %s', $this->textdomain), $post_type['singular'] ),
+                        'new_item'              => sprintf( __('New %s', $this->textdomain), $post_type['singular'] ),
+                        'view_item'             => sprintf( __('View %s', $this->textdomain), $post_type['singular'] ),
+                        'search_items'          => sprintf( __('Search %s', $this->textdomain), $post_type['plural'] ),
+                        'not_found'             => sprintf( __('No %s found', $this->textdomain), $post_type['plural'] ),
+                        'not_found_in_trash'    => sprintf( __('No %s found in Trash', $this->textdomain), $post_type['plural'] ),
+                        'parent_item_colon'     => sprintf( __('Parent %s:', $this->textdomain), $post_type['singular'] ),                    
                     ],
                     'public' => true,
                 ];
                 
                 // Fastforwards icon setting
-                if( isset($type['icon']) && $type['icon'] ) {
-                    $type['args']['menu_icon'] = $type['icon'];
+                if( isset($post_type['icon']) && $post_type['icon'] ) {
+                    $post_type['args']['menu_icon'] = $post_type['icon'];
                 } 
                 
                 // Fastforwards slug setting
-                if( isset($type['slug']) && $type['slug'] ) {
-                    $type['args']['rewrite']['slug'] = $type['slug'];
+                if( isset($post_type['slug']) && $post_type['slug'] ) {
+                    $post_type['args']['rewrite']['slug'] = $post_type['slug'];
                 }                  
                 
                 // Merge defaults and arguments
-                $type['args'] = wp_parse_args( isset($type['args']) ? $type['args'] : [], $defaults );
+                $post_type['args'] = wp_parse_args( isset($post_type['args']) ? $post_type['args'] : [], $defaults );
                 
-                register_post_type($type['name'], $type['args']);
+                register_post_type($post_type['name'], $post_type['args']);
 
                 // Adds existing taxonomies to this post type
-                if( isset($type['taxonomies']) && is_array($type['taxonomies']) ) {
-                    foreach( $type['taxonomies'] as $taxonomy ) {
+                if( isset($post_type['taxonomies']) && is_array($post_type['taxonomies']) ) {
+                    foreach( $post_type['taxonomies'] as $taxonomy ) {
                         if( ! taxonomy_exists($taxonomy) ) {
                             continue;
                         }
-                        register_taxonomy_for_object_type($taxonomy, $type['name']);
+                        register_taxonomy_for_object_type($taxonomy, $post_type['name']);
                     }
                 }
                 
@@ -116,11 +125,9 @@ class Register {
      */
     private function taxonomies() {
         
-        $object = $this;
-        
-        add_action( 'init', function() use($object) {
+        add_action( 'init', function() {
             
-            foreach( $object->register['taxonomies'] as $taxonomy ) {
+            foreach( $this->register['taxonomies'] as $taxonomy ) {
                 
                 // We should have a name and object
                 if( ! isset($taxonomy['name']) || ! isset($taxonomy['object']) ) {
@@ -129,23 +136,23 @@ class Register {
                 
                 $defaults = [
                     'labels' => [
-                        'name'                          => sprintf( __('%s', $object->textdomain), $taxonomy['plural'] ),
-                        'singular_name'                 => sprintf( __('%s', $object->textdomain), $taxonomy['singular'] ),
-                        'menu_name'                     => sprintf( __('%s', $object->textdomain), $taxonomy['plural'] ),
-                        'all_items'                     => sprintf( __('All %s', $object->textdomain), $taxonomy['plural'] ),
-                        'edit_item'                     => sprintf( __('Edit %s', $object->textdomain), $taxonomy['singular'] ),
-                        'view_item'                     => sprintf( __('View %s', $object->textdomain), $taxonomy['singular'] ),
-                        'update_item'                   => sprintf( __('Update %s', $object->textdomain), $taxonomy['singular'] ),
-                        'add_new_item'                  => sprintf( __('Add New %s', $object->textdomain), $taxonomy['singular'] ),
-                        'new_item_name'                 => sprintf( __('New %s Name', $object->textdomain), $taxonomy['singular'] ),
-                        'parent_item'                   => sprintf( __('Parent %s', $object->textdomain), $taxonomy['plural'] ),
-                        'parent_item_colon'             => sprintf( __('Parent %s:', $object->textdomain), $taxonomy['plural'] ),
-                        'search_items'                  => sprintf( __('Search %s', $object->textdomain), $taxonomy['plural'] ),
-                        'popular_items'                 => sprintf( __('Popular %s', $object->textdomain), $taxonomy['plural'] ),
-                        'separate_items_with_commas'    => sprintf( __('Seperate %s with commas', $object->textdomain), $taxonomy['plural'] ),
-                        'add_or_remove_items'           => sprintf( __('Add or remove %s', $object->textdomain), $taxonomy['plural'] ),
-                        'choose_from_most_used'         => sprintf( __('Choose from most used %s', $object->textdomain), $taxonomy['plural'] ),
-                        'not_found'                     => sprintf( __('No %s found', $object->textdomain), $taxonomy['plural'] )                   
+                        'name'                          => sprintf( __('%s', $this->textdomain), $taxonomy['plural'] ),
+                        'singular_name'                 => sprintf( __('%s', $this->textdomain), $taxonomy['singular'] ),
+                        'menu_name'                     => sprintf( __('%s', $this->textdomain), $taxonomy['plural'] ),
+                        'all_items'                     => sprintf( __('All %s', $this->textdomain), $taxonomy['plural'] ),
+                        'edit_item'                     => sprintf( __('Edit %s', $this->textdomain), $taxonomy['singular'] ),
+                        'view_item'                     => sprintf( __('View %s', $this->textdomain), $taxonomy['singular'] ),
+                        'update_item'                   => sprintf( __('Update %s', $this->textdomain), $taxonomy['singular'] ),
+                        'add_new_item'                  => sprintf( __('Add New %s', $this->textdomain), $taxonomy['singular'] ),
+                        'new_item_name'                 => sprintf( __('New %s Name', $this->textdomain), $taxonomy['singular'] ),
+                        'parent_item'                   => sprintf( __('Parent %s', $this->textdomain), $taxonomy['plural'] ),
+                        'parent_item_colon'             => sprintf( __('Parent %s:', $this->textdomain), $taxonomy['plural'] ),
+                        'search_items'                  => sprintf( __('Search %s', $this->textdomain), $taxonomy['plural'] ),
+                        'popular_items'                 => sprintf( __('Popular %s', $this->textdomain), $taxonomy['plural'] ),
+                        'separate_items_with_commas'    => sprintf( __('Seperate %s with commas', $this->textdomain), $taxonomy['plural'] ),
+                        'add_or_remove_items'           => sprintf( __('Add or remove %s', $this->textdomain), $taxonomy['plural'] ),
+                        'choose_from_most_used'         => sprintf( __('Choose from most used %s', $this->textdomain), $taxonomy['plural'] ),
+                        'not_found'                     => sprintf( __('No %s found', $this->textdomain), $taxonomy['plural'] )                   
                     ],
                     'hierarchical' => true
                 ];
@@ -171,11 +178,9 @@ class Register {
      */
     private function sidebars() {
         
-        $object = $this;
-        
-        add_action( 'widgets_init', function() use($object) {
+        add_action( 'widgets_init', function() {
             
-            foreach( $object->register['sidebars'] as $sidebar ) {
+            foreach( $this->register['sidebars'] as $sidebar ) {
 
                 // Default attributes for the sidebars
                 $defaults = [
@@ -194,19 +199,28 @@ class Register {
         } );
             
     }
+
+    /**
+     * Register::imageSizes is deprecated.
+     * This code maintains backwards compatibility.
+     */
+    private function imageSizes() {
+        $this->image_sizes();
+    }    
     
     /**
      * Registers custom image sizes
      * If themes hook early on after_setup_theme, this function can still be executed
      */
-    private function imageSizes() {
+    private function image_sizes() {
         
-        $object = $this;
-        
-        add_action( 'after_setup_theme', function() use($object) {
+        add_action( 'after_setup_theme', function() {
+
+            // Maintains backwards compatibility with older camelCase set-up
+            $this->register['image_sizes'] = isset($this->register['imageSizes']) ? $this->register['imageSizes'] : $this->register['image_sizes'];
             
-            foreach( $object->register['imageSizes'] as $imageSize ) {
-                add_image_size( $imageSize['name'], $imageSize['width'], $imageSize['height'], $imageSize['crop'] );
+            foreach( $this->register['image_sizes'] as $image_size ) {
+                add_image_size( $image_size['name'], $image_size['width'], $image_size['height'], $image_size['crop'] );
             }
             
         }, 20 );
@@ -218,11 +232,9 @@ class Register {
      */
     private function widgets() {
         
-        $object = $this;
-        
-        add_action( 'widgets_init', function() use($object) {
+        add_action( 'widgets_init', function() {
             
-            foreach( $object->register['widgets'] as $widget ) {
+            foreach( $this->register['widgets'] as $widget ) {
                 
                 if( ! class_exists($widget) ) {
                     continue;
@@ -239,12 +251,33 @@ class Register {
      */
     private function menus() {
         
-        $object = $this;
-        
-        add_action( 'after_setup_theme', function() use($object) {
-            register_nav_menus( $object->register['menus'] );
+        add_action( 'after_setup_theme', function() {
+            register_nav_menus( $this->register['menus'] );
         }, 20 );
         
+    }
+
+    /**
+     * Register gutenberg blocks
+     */
+    private function blocks() {
+
+        foreach( $this->register['blocks'] as $block ) {
+
+            // Type should be set
+            if( ! isset($block['type']) || ! $block['type'] ) {
+                continue;
+            }
+
+            // Argument should be set
+            if( ! isset($block['args']) || ! is_array($block['args']) ) {
+                continue;
+            }            
+
+            register_block_type($block['type'], $block['args']);
+
+        }
+ 
     }
     
 }

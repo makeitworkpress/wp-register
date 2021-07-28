@@ -1,5 +1,5 @@
 # wp-register
-WordPress has many registration tasks. WP Register makes registering custom image sizes, menus, post types, taxonomies, sidebars and widgets easy. 
+WordPress has many registration tasks. WP Register makes registering custom blocks, image sizes, menus, post types, taxonomies, sidebars and widgets easy. 
 
 WP Register is maintained by [Make it WorkPress](https://makeitwork.press/scripts/wp-register/).
 
@@ -7,11 +7,17 @@ WP Register is maintained by [Make it WorkPress](https://makeitwork.press/script
 Include the WP_Register class in your plugin, theme or child theme file. Require it in your file, use an autoloader or include it using composer. You can read more about autoloading in [the readme of wp-autoload](https://github.com/makeitworkpress/wp-autoload).
 
 ### Build your array with registrations
-You can add the types you want to register through an multidimensional array. Please follow the format as specified in the example below. The comments will give additional information on what each value does.
+You can add the types you want to register through an multidimensional array, as explained in the example below
 
 ```php
 $registrations = [
-    'imageSizes' => [
+    'blocks' => [
+        [
+            'type'  => 'custom/block-type',                     // The type, object or json path for the custom gutenberg block
+            'args'  => ['style' => 'custom-block-type-style']   // The arguments for registering a block, following the arguments in the codex
+        ]
+    ]
+    'image_sizes' => [
         [
             'name'   => 'fhd',
             'height' => 1080,
@@ -23,7 +29,7 @@ $registrations = [
         'menu-location'     => __('Custom Menu Location', 'textdomain'),
         'another-location'  => __('AnotherCustom Menu Location', 'textdomain')
     ],     
-    'postTypes' => [
+    'post_types' => [
         [
             'name'          => 'beer', 
             'plural'        => __('Beers', 'textdomain'), 
@@ -67,4 +73,4 @@ Create a new instance of the WP_Register class with your registration array and 
 $register = new MakeitWorkPress\WP_Register\Register( $registrations, 'textdomain' );
 ```
 
-The Register class accepts two arguments, namely an ``array $registrations`` and ``string $textdomain``.
+The Register class accepts two arguments, namely an ``Array $registrations`` and ``String $textdomain``.
