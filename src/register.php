@@ -14,6 +14,7 @@ class Register {
     /**
      * Holds the array with types to register
      *
+     * @var array
      * @access public
      */
     public $register;
@@ -21,7 +22,8 @@ class Register {
     /**
      * Holds the string with the language domain.
      *
-     * @access private
+     * @var string
+     * @access public
      */
     public $textdomain;    
     
@@ -31,7 +33,7 @@ class Register {
      * @param array     $register   The array with objects to be registered, supports post_types, taxonomies, menus, sidebars, widgets, blocks and image_sizes
      * @param string    $domain     The language domain for the current plugin or theme
      */
-    public function __construct(Array $register = [], $textdomain = '') {
+    public function __construct(array $register = [], string $textdomain = '') {
         $this->register     = $register;
         $this->textdomain   = '';
         
@@ -50,14 +52,14 @@ class Register {
      * Register::postTypes is deprecated.
      * This code maintains backwards compatibility.
      */
-    private function postTypes() {
+    private function postTypes(): void {
         $this->post_types();
     }
     
     /**
      * Registers the post types
      */
-    private function post_types() {
+    private function post_types(): void {
         
         add_action( 'init', function() {
 
@@ -123,7 +125,7 @@ class Register {
     /**
      * Register custom taxonomies
      */
-    private function taxonomies() {
+    private function taxonomies(): void {
         
         add_action( 'init', function() {
             
@@ -176,7 +178,7 @@ class Register {
     /**
      * Register sidebars
      */
-    private function sidebars() {
+    private function sidebars(): void {
         
         add_action( 'widgets_init', function() {
             
@@ -204,7 +206,7 @@ class Register {
      * Register::imageSizes is deprecated.
      * This code maintains backwards compatibility.
      */
-    private function imageSizes() {
+    private function imageSizes(): void {
         $this->image_sizes();
     }    
     
@@ -212,7 +214,7 @@ class Register {
      * Registers custom image sizes
      * If themes hook early on after_setup_theme, this function can still be executed
      */
-    private function image_sizes() {
+    private function image_sizes(): void {
         
         add_action( 'after_setup_theme', function() {
 
@@ -230,7 +232,7 @@ class Register {
     /**
      * Registers custom widgets
      */
-    private function widgets() {
+    private function widgets(): void {
         
         add_action( 'widgets_init', function() {
             
@@ -249,7 +251,7 @@ class Register {
     /**
      * Register menus
      */
-    private function menus() {
+    private function menus(): void {
         
         add_action( 'after_setup_theme', function() {
             register_nav_menus( $this->register['menus'] );
@@ -260,7 +262,7 @@ class Register {
     /**
      * Register gutenberg blocks
      */
-    private function blocks() {
+    private function blocks(): void {
 
         foreach( $this->register['blocks'] as $block ) {
 
